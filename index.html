@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ModifierCalculator - Game-Agnostic Modifier Calculator for Vue 3</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    /* VModifierCalculator Component Styles */
+    .v-modifier-calculator {
+      --mod-primary-color: #667eea;
+      --mod-positive-color: #48bb78;
+      --mod-negative-color: #f56565;
+      --mod-temporary-color: #ed8936;
+      --mod-border-color: #e2e8f0;
+      --mod-bg-color: #ffffff;
+      --mod-text-color: #2d3748;
+      --mod-breakdown-bg: #f7fafc;
+      
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--mod-bg-color);
+      border: 2px solid var(--mod-border-color);
+      border-radius: 8px;
+      padding: 16px;
+      color: var(--mod-text-color);
+    }
+
+    .mod-total {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .total-value {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .total-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--mod-primary-color);
+    }
+
+    .total-numeric {
+      font-size: 18px;
+      color: #718096;
+    }
+
+    .mod-breakdown {
+      background: var(--mod-breakdown-bg);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mod-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid var(--mod-primary-color);
+    }
+
+    .mod-item.mod-negative {
+      border-left-color: var(--mod-negative-color);
+    }
+
+    .mod-item.mod-temporary {
+      border-left-color: var(--mod-temporary-color);
+      background: #fffaf0;
+    }
+
+    .mod-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .mod-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mod-positive-color);
+    }
+
+    .mod-item.mod-negative .mod-value {
+      color: var(--mod-negative-color);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">🎲 ModifierCalculator</div>
+      <div class="nav-links">
+        <a href="index.html" class="active">Home</a>
+        <a href="component.html">Component</a>
+        <a href="https://github.com/rakmaster/modifier-calculator" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <div id="app">
+    <!-- Hero Section -->
+    <header class="hero">
+      <div class="container">
+        <h1>🎲 ModifierCalculator</h1>
+        <p class="hero-subtitle">Game-agnostic modifier calculator for any RPG system</p>
+        <div class="hero-buttons">
+          <a href="#install" class="btn btn-primary">Get Started</a>
+          <a href="https://github.com/rakmaster/modifier-calculator" class="btn btn-secondary">View on GitHub</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Demo Section -->
+    <section class="demo-section">
+      <div class="container">
+        <h2>Try It Out</h2>
+        <p class="section-subtitle">See how modifiers combine in real-time</p>
+        <div class="demo-card">
+          <v-modifier-calculator
+            :modifiers="demoModifiers"
+            show-breakdown
+          ></v-modifier-calculator>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+      <div class="container">
+        <h2>Features</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Game-Agnostic</h3>
+            <p>Works with D&D, Pathfinder, Call of Cthulhu, FATE, and any RPG system</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Visual Breakdown</h3>
+            <p>See exactly where each modifier comes from with detailed breakdowns</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔧</div>
+            <h3>Configurable Stacking</h3>
+            <p>Support for all-stack, typed bonuses, or highest-only rules</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Reactive</h3>
+            <p>Auto-updates when modifiers change with Vue 3 reactivity</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>Customizable</h3>
+            <p>CSS variables for complete color customization</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🔌</div>
+            <h3>Flexible Output</h3>
+            <p>Display as numeric totals or dice notation formulas</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">⏱️</div>
+            <h3>Temporary Modifiers</h3>
+            <p>Track buffs and debuffs separately with visual highlighting</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Responsive</h3>
+            <p>Mobile-friendly design that works on any device</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">🎮</div>
+            <h3>Interactive Mode</h3>
+            <p>Allow players to add and remove modifiers dynamically</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section id="install" class="install-section">
+      <div class="container">
+        <h2>Installation</h2>
+        
+        <div class="install-option">
+          <h3>Vue Component</h3>
+          <p>Ready-to-use Vue 3 component for modifier calculations</p>
+          <pre><code>npm install @modifier-calculator/vue</code></pre>
+          
+          <div class="code-example">
+            <h4>Usage:</h4>
+            <pre><code>&lt;template&gt;
+  &lt;VModifierCalculator
+    :modifiers="modifiers"
+    show-breakdown
+    @update:total="handleUpdate"
+  /&gt;
+&lt;/template&gt;
+
+&lt;script setup&gt;
+import { ref } from 'vue';
+import { VModifierCalculator } from '@modifier-calculator/vue';
+
+const modifiers = ref([
+  { id: '1', label: 'Strength', value: 3, type: 'base' },
+  { id: '2', label: 'Proficiency', value: 3, type: 'training' },
+  { id: '3', label: 'Magic Weapon', value: 1, type: 'bonus' }
+]);
+&lt;/script&gt;</code></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explore More Section -->
+    <section class="examples-section">
+      <div class="container">
+        <h2>Explore More</h2>
+        <div class="examples-grid">
+          <a href="component.html" class="example-card">
+            <div class="example-icon">📚</div>
+            <h3>Interactive Documentation</h3>
+            <p>Comprehensive guide with live examples and API reference</p>
+            <span class="example-link">Explore Component →</span>
+          </a>
+          <a href="component.html#api" class="example-card">
+            <div class="example-icon">🔧</div>
+            <h3>API Reference</h3>
+            <p>Complete props, events, and stacking modes documentation</p>
+            <span class="example-link">View API →</span>
+          </a>
+          <a href="https://github.com/rakmaster/modifier-calculator" target="_blank" class="example-card">
+            <div class="example-icon">💻</div>
+            <h3>Source Code</h3>
+            <p>View the source, report issues, or contribute on GitHub</p>
+            <span class="example-link">View on GitHub →</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>Built with ❤️ for the RPG and gaming community</p>
+        <p>
+          <a href="https://github.com/rakmaster/modifier-calculator">GitHub</a> •
+          <a href="https://github.com/rakmaster/modifier-calculator/issues">Issues</a> •
+          <a href="mailto:logan@phantasea.net">Contact</a>
+        </p>
+        <p style="font-size: 12px; opacity: 0.7; margin-top: 12px;">
+          Component design inspired by the fantastic work of the
+          <a href="https://vuetifyjs.com" target="_blank" style="color: inherit;">Vuetify team</a>
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module">
+    const { createApp } = Vue;
+
+    // Inline VModifierCalculator component for demo
+    const VModifierCalculator = {
+      template: `
+        <div class="v-modifier-calculator">
+          <div class="mod-total">
+            <div class="total-value">
+              <span class="total-number">{{ computedTotal }}</span>
+            </div>
+          </div>
+          <div v-if="showBreakdown" class="mod-breakdown">
+            <div class="breakdown-list">
+              <div v-for="mod in modifiers" :key="mod.id" class="mod-item" :class="getModifierClass(mod)">
+                <span class="mod-label">{{ mod.label }}</span>
+                <span class="mod-value">{{ formatValue(mod.value) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      props: {
+        modifiers: { type: Array, default: () => [] },
+        showBreakdown: { type: Boolean, default: false }
+      },
+      computed: {
+        computedTotal() {
+          return this.modifiers.reduce((sum, mod) => {
+            return sum + (typeof mod.value === 'number' ? mod.value : 0);
+          }, 0);
+        }
+      },
+      methods: {
+        formatValue(value) {
+          if (typeof value === 'string') return value;
+          return value >= 0 ? `+${value}` : `${value}`;
+        },
+        getModifierClass(mod) {
+          const classes = [];
+          if (mod.temporary) classes.push('mod-temporary');
+          if (typeof mod.value === 'number' && mod.value < 0) classes.push('mod-negative');
+          return classes.join(' ');
+        }
+      }
+    };
+
+    createApp({
+      components: {
+        'v-modifier-calculator': VModifierCalculator
+      },
+      data() {
+        return {
+          demoModifiers: [
+            { id: '1', label: 'Strength', value: 3, type: 'base' },
+            { id: '2', label: 'Proficiency', value: 3, type: 'training' },
+            { id: '3', label: 'Magic Weapon', value: 1, type: 'bonus' },
+            { id: '4', label: 'Bless', value: 2, type: 'bonus', temporary: true }
+          ]
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

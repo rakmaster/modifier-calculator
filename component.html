@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VModifierCalculator Component - Interactive Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    #app {
+      padding: 0 20px 40px 20px;
+    }
+
+    .section-header {
+      font-size: 24px;
+      font-weight: 600;
+      color: #333;
+      margin: 40px 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+
+    /* Playground Styles */
+    .playground-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 60px;
+    }
+
+    .playground-controls {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #666;
+      margin-bottom: 6px;
+    }
+
+    .control-input {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .control-input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .control-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .control-checkbox label {
+      font-size: 14px;
+      color: #666;
+      cursor: pointer;
+    }
+
+    .playground-preview {
+      background: #f8f9fa;
+      padding: 32px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .playground-code {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+
+    .code-tag {
+      color: #569cd6;
+    }
+
+    .code-attr {
+      color: #9cdcfe;
+    }
+
+    .code-value {
+      color: #ce9178;
+    }
+
+    .code-bool {
+      color: #569cd6;
+    }
+
+    /* VModifierCalculator Styles */
+    .v-modifier-calculator {
+      --mod-primary-color: #667eea;
+      --mod-positive-color: #48bb78;
+      --mod-negative-color: #f56565;
+      --mod-temporary-color: #ed8936;
+      --mod-border-color: #e2e8f0;
+      --mod-bg-color: #ffffff;
+      --mod-text-color: #2d3748;
+      --mod-breakdown-bg: #f7fafc;
+      
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--mod-bg-color);
+      border: 2px solid var(--mod-border-color);
+      border-radius: 8px;
+      padding: 16px;
+      color: var(--mod-text-color);
+      max-width: 500px;
+    }
+
+    .mod-total {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .total-value {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .total-number {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--mod-primary-color);
+    }
+
+    .total-numeric {
+      font-size: 18px;
+      color: #718096;
+    }
+
+    .mod-breakdown {
+      background: var(--mod-breakdown-bg);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .mod-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 4px;
+      border-left: 3px solid var(--mod-primary-color);
+    }
+
+    .mod-item.mod-negative {
+      border-left-color: var(--mod-negative-color);
+    }
+
+    .mod-item.mod-temporary {
+      border-left-color: var(--mod-temporary-color);
+      background: #fffaf0;
+    }
+
+    .mod-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .mod-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mod-positive-color);
+    }
+
+    .mod-item.mod-negative .mod-value {
+      color: var(--mod-negative-color);
+    }
+
+    .props-list {
+      background: #f8f9fa;
+      border-radius: 6px;
+      padding: 12px;
+      margin-top: 16px;
+      font-size: 12px;
+    }
+
+    .props-list code {
+      background: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #667eea;
+      font-family: 'Monaco', 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">🎲 ModifierCalculator</div>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="component.html" class="active">Component</a>
+        <a href="https://github.com/rakmaster/modifier-calculator" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </nav>
+
+  <div id="app">
+    <section style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 60px 20px; margin: 0 -20px 40px -20px;">
+      <div class="container">
+        <h1 style="margin-bottom: 8px; color: white;">VModifierCalculator Component</h1>
+        <p style="opacity: 0.9; margin-bottom: 40px; color: white;">Interactive playground - adjust the controls to see live updates</p>
+
+        <!-- Interactive Playground -->
+        <div class="playground-card">
+          <div class="playground-controls">
+            <div class="control-grid">
+              <div class="control-group">
+                <label class="control-label">Base Value</label>
+                <input v-model="playground.baseValue" class="control-input" placeholder="e.g., 0 or d20">
+              </div>
+              <div class="control-group">
+                <label class="control-label">Stacking Mode</label>
+                <select v-model="playground.stackingMode" class="control-input">
+                  <option value="all">All Stack</option>
+                  <option value="typed">Typed Bonuses</option>
+                  <option value="highest">Highest Only</option>
+                </select>
+              </div>
+            </div>
+            <div class="control-grid" style="margin-top: 16px;">
+              <div class="control-checkbox">
+                <input type="checkbox" id="show-breakdown" v-model="playground.showBreakdown">
+                <label for="show-breakdown">Show Breakdown</label>
+              </div>
+              <div class="control-checkbox">
+                <input type="checkbox" id="show-formula" v-model="playground.showFormula">
+                <label for="show-formula">Show Formula</label>
+              </div>
+              <div class="control-checkbox">
+                <input type="checkbox" id="group-by-type" v-model="playground.groupByType">
+                <label for="group-by-type">Group by Type</label>
+              </div>
+            </div>
+          </div>
+          <div class="playground-preview">
+            <v-modifier-calculator
+              :modifiers="playground.modifiers"
+              :base-value="playground.baseValue"
+              :stacking-mode="playground.stackingMode"
+              :show-breakdown="playground.showBreakdown"
+              :show-formula="playground.showFormula"
+              :group-by-type="playground.groupByType"
+            ></v-modifier-calculator>
+          </div>
+          <div class="playground-code">
+            <span class="code-tag">&lt;v-modifier-calculator</span><br>
+            <span class="code-attr">  :modifiers</span>=<span class="code-value">"modifiers"</span><br>
+            <span class="code-attr" v-if="playground.baseValue">  base-value</span>=<span class="code-value" v-if="playground.baseValue">"{{ playground.baseValue }}"</span><br v-if="playground.baseValue">
+            <span class="code-attr" v-if="playground.stackingMode !== 'all'">  stacking-mode</span>=<span class="code-value" v-if="playground.stackingMode !== 'all'">"{{ playground.stackingMode }}"</span><br v-if="playground.stackingMode !== 'all'">
+            <span class="code-attr" v-if="playground.showBreakdown">  show-breakdown</span><br v-if="playground.showBreakdown">
+            <span class="code-attr" v-if="playground.showFormula">  show-formula</span><br v-if="playground.showFormula">
+            <span class="code-attr" v-if="playground.groupByType">  group-by-type</span><br v-if="playground.groupByType">
+            <span class="code-tag">/&gt;</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <h2 class="section-header">Stacking Modes</h2>
+      <div class="demo-grid">
+        <!-- All Stack -->
+        <div class="demo-card-wrapper">
+          <div class="demo-title">All Stack (D&D 5e)</div>
+          <div class="demo-description">
+            All modifiers add together. Most common in D&D 5e.
+          </div>
+          <v-modifier-calculator
+            :modifiers="stackingExamples.all"
+            stacking-mode="all"
+            show-breakdown
+          ></v-modifier-calculator>
+          <div class="code-block">&lt;v-modifier-calculator :modifiers="modifiers" stacking-mode="all" /&gt;</div>
+        </div>
+
+        <!-- Typed Bonuses -->
+        <div class="demo-card-wrapper">
+          <div class="demo-title">Typed Bonuses (Pathfinder)</div>
+          <div class="demo-description">
+            Same category bonuses don't stack. Only highest applies.
+          </div>
+          <v-modifier-calculator
+            :modifiers="stackingExamples.typed"
+            stacking-mode="typed"
+            show-breakdown
+          ></v-modifier-calculator>
+          <div class="code-block">&lt;v-modifier-calculator :modifiers="modifiers" stacking-mode="typed" /&gt;</div>
+        </div>
+
+        <!-- Highest Only -->
+        <div class="demo-card-wrapper">
+          <div class="demo-title">Highest Only</div>
+          <div class="demo-description">
+            Only the single highest modifier applies.
+          </div>
+          <v-modifier-calculator
+            :modifiers="stackingExamples.highest"
+            stacking-mode="highest"
+            show-breakdown
+          ></v-modifier-calculator>
+          <div class="code-block">&lt;v-modifier-calculator :modifiers="modifiers" stacking-mode="highest" /&gt;</div>
+        </div>
+      </div>
+
+      <h2 class="section-header">Game System Examples</h2>
+      <div class="demo-grid">
+        <!-- D&D 5e -->
+        <div class="demo-card-wrapper">
+          <div class="demo-title">D&D 5e Attack Roll</div>
+          <div class="demo-description">
+            Ability modifier + proficiency + magic weapon + temporary buff
+          </div>
+          <v-modifier-calculator
+            base-value="d20"
+            :modifiers="gameExamples.dnd5e"
+            show-formula
+            show-breakdown
+          ></v-modifier-calculator>
+          <div class="code-block">&lt;v-modifier-calculator base-value="d20" :modifiers="modifiers" show-formula /&gt;</div>
+        </div>
+
+        <!-- Call of Cthulhu -->
+        <div class="demo-card-wrapper">
+          <div class="demo-title">Call of Cthulhu</div>
+          <div class="demo-description">
+            Base skill with situational penalties
+          </div>
+          <v-modifier-calculator
+            :modifiers="gameExamples.coc"
+            show-breakdown
+          ></v-modifier-calculator>
+          <div class="code-block">&lt;v-modifier-calculator :modifiers="modifiers" /&gt;</div>
+        </div>
+
+        <!-- World of Darkness -->
+        <div class="demo-card-wrapper">
+          <div class="demo-title">World of Darkness</div>
+          <div class="demo-description">
+            Dice pool: attribute + skill + modifiers
+          </div>
+          <v-modifier-calculator
+            :modifiers="gameExamples.wod"
+            show-formula
+            show-breakdown
+          ></v-modifier-calculator>
+          <div class="code-block">&lt;v-modifier-calculator :modifiers="modifiers" show-formula /&gt;</div>
+        </div>
+      </div>
+
+      <h2 class="section-header" id="api">Available Props</h2>
+      <div class="demo-card-wrapper">
+        <div class="props-list">
+          <code>modifiers</code> - Array of ModifierSource objects<br>
+          <code>baseValue</code> - Starting value (number or dice notation)<br>
+          <code>stackingMode</code> - 'all' | 'typed' | 'highest'<br>
+          <code>showBreakdown</code> - Display detailed breakdown<br>
+          <code>showFormula</code> - Show dice notation formula<br>
+          <code>interactive</code> - Allow adding/removing modifiers<br>
+          <code>compact</code> - Compact display mode<br>
+          <code>groupByType</code> - Group modifiers by type<br>
+          <code>highlightTemporary</code> - Visually distinguish temporary modifiers
+        </div>
+      </div>
+
+      <h2 class="section-header">Available Events</h2>
+      <div class="demo-card-wrapper">
+        <div class="props-list">
+          <code>@update:total</code> - Emitted when total changes<br>
+          <code>@update:formula</code> - Emitted when formula changes<br>
+          <code>@update:breakdown</code> - Emitted with detailed breakdown<br>
+          <code>@modifier-added</code> - Emitted when modifier added (interactive mode)<br>
+          <code>@modifier-removed</code> - Emitted when modifier removed (interactive mode)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    const { createApp } = Vue;
+
+    // Inline VModifierCalculator component
+    const VModifierCalculator = {
+      template: `
+        <div class="v-modifier-calculator">
+          <div class="mod-total">
+            <div class="total-value">
+              <span class="total-number">{{ showFormula ? computedFormula : computedTotal }}</span>
+              <span v-if="showFormula && computedTotal !== baseValue" class="total-numeric">({{ computedTotal }})</span>
+            </div>
+          </div>
+          <div v-if="showBreakdown" class="mod-breakdown">
+            <div class="breakdown-list">
+              <div v-for="mod in activeModifiers" :key="mod.id" class="mod-item" :class="getModifierClass(mod)">
+                <span class="mod-label">{{ mod.label }}</span>
+                <span class="mod-value">{{ formatValue(mod.value) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `,
+      props: {
+        modifiers: { type: Array, default: () => [] },
+        baseValue: { type: [Number, String], default: 0 },
+        stackingMode: { type: String, default: 'all' },
+        showBreakdown: { type: Boolean, default: false },
+        showFormula: { type: Boolean, default: false },
+        groupByType: { type: Boolean, default: false }
+      },
+      computed: {
+        activeModifiers() {
+          return this.modifiers.filter(mod => {
+            if (mod.condition) return mod.condition();
+            return true;
+          });
+        },
+        computedTotal() {
+          const base = typeof this.baseValue === 'number' ? this.baseValue : 0;
+          
+          if (this.stackingMode === 'highest') {
+            const highest = this.activeModifiers.reduce((max, mod) => {
+              const val = typeof mod.value === 'number' ? mod.value : 0;
+              return val > max ? val : max;
+            }, 0);
+            return base + highest;
+          }
+          
+          if (this.stackingMode === 'typed') {
+            const byCategory = {};
+            this.activeModifiers.forEach(mod => {
+              const val = typeof mod.value === 'number' ? mod.value : 0;
+              const cat = mod.category || 'untyped';
+              if (!byCategory[cat] || val > byCategory[cat]) {
+                byCategory[cat] = val;
+              }
+            });
+            return base + Object.values(byCategory).reduce((sum, val) => sum + val, 0);
+          }
+          
+          return base + this.activeModifiers.reduce((sum, mod) => {
+            return sum + (typeof mod.value === 'number' ? mod.value : 0);
+          }, 0);
+        },
+        computedFormula() {
+          const baseStr = this.baseValue?.toString() || '0';
+          const numericMods = this.activeModifiers.filter(m => typeof m.value === 'number');
+          const diceMods = this.activeModifiers.filter(m => typeof m.value === 'string');
+          
+          let formula = baseStr;
+          
+          const numericTotal = numericMods.reduce((sum, mod) => {
+            return sum + (typeof mod.value === 'number' ? mod.value : 0);
+          }, 0);
+          
+          if (numericTotal !== 0) {
+            formula += numericTotal > 0 ? ` + ${numericTotal}` : ` - ${Math.abs(numericTotal)}`;
+          }
+          
+          diceMods.forEach(mod => {
+            formula += ` + ${mod.value}`;
+          });
+          
+          return formula;
+        }
+      },
+      methods: {
+        formatValue(value) {
+          if (typeof value === 'string') return value;
+          return value >= 0 ? `+${value}` : `${value}`;
+        },
+        getModifierClass(mod) {
+          const classes = [];
+          if (mod.temporary) classes.push('mod-temporary');
+          if (typeof mod.value === 'number' && mod.value < 0) classes.push('mod-negative');
+          return classes.join(' ');
+        }
+      }
+    };
+
+    createApp({
+      components: {
+        'v-modifier-calculator': VModifierCalculator
+      },
+      data() {
+        return {
+          playground: {
+            modifiers: [
+              { id: '1', label: 'Strength', value: 3, type: 'base' },
+              { id: '2', label: 'Proficiency', value: 3, type: 'training' },
+              { id: '3', label: 'Magic Weapon', value: 1, type: 'bonus' },
+              { id: '4', label: 'Bless', value: 2, type: 'bonus', temporary: true }
+            ],
+            baseValue: '',
+            stackingMode: 'all',
+            showBreakdown: true,
+            showFormula: false,
+            groupByType: false
+          },
+          stackingExamples: {
+            all: [
+              { id: '1', label: 'Base', value: 5, type: 'base' },
+              { id: '2', label: 'Bonus 1', value: 2, type: 'bonus' },
+              { id: '3', label: 'Bonus 2', value: 3, type: 'bonus' }
+            ],
+            typed: [
+              { id: '1', label: 'Base', value: 5, type: 'base' },
+              { id: '2', label: 'Item 1', value: 2, type: 'bonus', category: 'item' },
+              { id: '3', label: 'Item 2', value: 3, type: 'bonus', category: 'item' },
+              { id: '4', label: 'Status', value: 1, type: 'bonus', category: 'status' }
+            ],
+            highest: [
+              { id: '1', label: 'Modifier 1', value: 2, type: 'bonus' },
+              { id: '2', label: 'Modifier 2', value: 5, type: 'bonus' },
+              { id: '3', label: 'Modifier 3', value: 3, type: 'bonus' }
+            ]
+          },
+          gameExamples: {
+            dnd5e: [
+              { id: '1', label: 'Strength', value: 3, type: 'base' },
+              { id: '2', label: 'Proficiency', value: 3, type: 'training' },
+              { id: '3', label: '+1 Longsword', value: 1, type: 'bonus' },
+              { id: '4', label: 'Bless', value: '1d4', type: 'bonus', temporary: true }
+            ],
+            coc: [
+              { id: '1', label: 'Spot Hidden', value: 45, type: 'base' },
+              { id: '2', label: 'Poor Lighting', value: -10, type: 'penalty' },
+              { id: '3', label: 'Rushed', value: -5, type: 'penalty' }
+            ],
+            wod: [
+              { id: '1', label: 'Dexterity', value: 3, type: 'base' },
+              { id: '2', label: 'Firearms', value: 2, type: 'training' },
+              { id: '3', label: 'Cover', value: -1, type: 'penalty' }
+            ]
+          }
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
